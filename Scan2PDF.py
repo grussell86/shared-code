@@ -68,11 +68,12 @@ def main(args):
 		
 		# Build the Input Form
 		with sg.FlexForm('Scan Document to PDF',default_button_element_size=(8,1),auto_size_buttons=True) as form:
-			layout = [[sg.Text('Select Document Source:'),
-					  sg.Radio('Scanner Glass', 'RADIO1', key='glass'), sg.Radio('Automatic Document Feeder', 'RADIO1', key='adf', default=True),
+			layout = [[sg.Frame('Document Source',[[
+					  sg.Radio('Scanner Glass', 'RADIO1', key='glass'), sg.Radio('Automatic Document Feeder', 'RADIO1', key='adf', default=True),]]),
 					  sg.Text('          '), sg.ReadFormButton('Clear', key='Clear'), sg.ReadFormButton('Scan Document', bind_return_key=True, key='Scan')],
+					  [sg.Frame('Options',[
 					  [sg.Checkbox('OCR Document after Scanning', key='ocr', default=True), sg.Checkbox('Open Document after Scanning', key='view', default=True)],
-					  [sg.Checkbox('Letter Size Paper                    ', key='letter', default=True), sg.Checkbox('Color', key='color', default=False)],
+					  [sg.Checkbox('Letter Size Paper                    ', key='letter', default=True), sg.Checkbox('Color', key='color', default=False)]])],
 					  [sg.Text('Status:', size=(15, 1))],
 					  [sg.Multiline(size=(100,35), key='output', background_color='#ECECEC', autoscroll=True, focus=True)],
 					  ]
