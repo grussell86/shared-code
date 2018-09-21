@@ -86,7 +86,7 @@ def main(args):
 			missing = CheckInstall()
 			if len(missing) > 0:
 				# Update Output Field with Missing Programs
-				UpdateOutput(form, 'The Following Helper Programs Could Be Found:\n\t' + missing + '\n\nSome Functionality May Be Limited', append=False)
+				UpdateOutput(form, 'The Following Helper Programs Could Be Found:\n\t' + missing + '\n\nSome Functionality May Be Limited', append_flag=False)
 				# Disable Relevant Form Elements Unless Only Sound is Missing
 				if missing != 'play':
 					form.FindElement('ocr').Update(False, disabled=True) # OCR Will Not Work if Any Other Program is Missing
@@ -109,7 +109,7 @@ def main(args):
 					form.FindElement('view').Update(True)
 					form.FindElement('letter').Update(True)
 					form.FindElement('color').Update(False)
-					UpdateOutput(form, None, append=False)
+					UpdateOutput(form, None, append_flag=False)
 				elif button == 'Scan':
 					# Generate a Unique Filename Based on Date and Time
 					outfile = outputdir + 'scan_' + datetime.datetime.now().strftime("%Y-%m-%d-%H-%M-%S") + '.pdf'
@@ -129,7 +129,7 @@ def main(args):
 		funcname = 'ScanDocument'
 		try:
 			# Update the Output Field
-			UpdateOutput(form, 'Beginning Scan...\n\n', append=False)
+			UpdateOutput(form, 'Beginning Scan...\n\n', append_flag=False)
 			# Determine Scanner to Use
 			device = ExecuteCommandSubprocess(form, 'lpstat', '-s | egrep -iv "fax|laser|pdf" | grep ip= | head -1 | cut -d= -f2- | xargs hp-makeuri -s', update_form=False).strip('\n')
 			# Set Scan Options for 'hp-scan'
@@ -147,7 +147,7 @@ def main(args):
 				args += ' --mode=gray'
 			args += ' --file="' + outfile + '"'			# Set Filename for Output Document
 			# Begin Scan and Display any Errors
-			ShowError(funcname, ExecuteCommandSubprocess(form, 'hp-scan', ''.join(args), update_form=True), True)
+			ShowError(funcname, ExecuteCommandSubprocess(form, 'hp-scan2', ''.join(args), update_form=True), True)
 		except Exception as e:
 			ShowError(funcname, 'Error: ' + str(e))
 
@@ -156,18 +156,18 @@ def main(args):
 		try:
 			if Path(document).is_file() == True:
 				# Update the Output Field
-				UpdateOutput(form, 'Beginning OCR...\n', append=True)
+				UpdateOutput(form, '\nBeginning OCR...\n', append_flag=True)
 				# Create a Working Directory
 				workdir = CreateWorkingDirectory()
 				# Copy Document to Working Directory
-				UpdateOutput(form, 'Copying Document to Working Directory\n')
+				UpdateOutput(form, '\nCopying Document to Working Directory\n')
 				workfile = shutil.copy(document, workdir)
 				if Path(workfile).is_file() == False:
 					ShowError(funcname, 'Error Copying Document to Working Directory')
 					return
 				basefile = workfile.replace('.pdf', '')	# Base Filename is Filename Without an Extension
 				# Get the PDF Info from the Working File
-				UpdateOutput(form, 'Extracting PDF Info from Document\n')
+				UpdateOutput(form, '\nExtracting PDF Info from Document\n')
 				pdfinfo = ExecuteCommandSubprocess(form, 'pdftk', workfile, 'dump_data')
 				if len(pdfinfo.strip()) > 0:
 					# Write PDF Info to a File
@@ -182,29 +182,29 @@ def main(args):
 					# Split PDF Into Individual Pages and OCR Each One
 					if numpages > 0:
 						for i in range(1, numpages + 1):
-							pagefile = basefile + '_' + str(i) + '.pdf' # Filename for Individual Pages
-							UpdateOutput(form, 'Extracting Page: ' + str(i) + '\n')
+							pagefile = basefile + '_' + str(i).zfill(6) + '.pdf' # Filename for Individual Pages
+							UpdateOutput(form, '\nExtracting Page: ' + str(i) + '\n')
 							if ShowError(funcname, ExecuteCommandSubprocess(form, 'pdftk', workfile, 'cat', str(i), 'output', pagefile), True) == True: return
 							UpdateOutput(form, 'Converting Page: ' + str(i) + ' to ppm\n')
 							if ShowError(funcname, ExecuteCommandSubprocess(form, 'pdftoppm', '-r 300', pagefile, '>', pagefile.replace('.pdf', '.ppm')), True) == True: return
 							UpdateOutput(form, 'Converting Page: ' + str(i) + ' to tif\n')
 							if ShowError(funcname, ExecuteCommandSubprocess(form, 'convert', '-density 300x300', pagefile.replace('.pdf', '.ppm'), pagefile.replace('.pdf', '.tif')), True) == True: return
-							UpdateOutput(form, 'Running OCR on Page: ' + str(i) + '\n')
+							UpdateOutput(form, 'Running OCR on Page: ' + str(i) + '\n\n')
 							if ShowError(funcname, ExecuteCommandSubprocess(form, 'tesseract', '-l eng', pagefile.replace('.pdf', '.tif'), pagefile.replace('.pdf', '-new'), 'pdf'), True) == True: return
 						# Merge OCRed Pages
-						UpdateOutput(form, 'Merging OCRed Pages in PDF\n')
+						UpdateOutput(form, '\nMerging OCRed Pages in PDF\n')
 						if ShowError(funcname, ExecuteCommandSubprocess(form, 'pdftk',  workdir + '*-new.pdf', 'cat', 'output', workdir + 'merged.pdf'), True) == True: return
 						# Add PDF Info to Document
-						UpdateOutput(form, 'Updating PDF Info\n')
+						UpdateOutput(form, '\nUpdating PDF Info\n')
 						if ShowError(funcname, ExecuteCommandSubprocess(form, 'pdftk',  workdir + 'merged.pdf', 'update_info', workdir + 'pdfinfo.txt', 'output', workdir + 'merged_ocr.pdf'), True) == True: return
 						# Move Document to Output Directory
-						UpdateOutput(form, 'Copying PDF File to Destination as ' + document + '\n')
+						UpdateOutput(form, '\nCopying PDF File to Destination as "' + document + '"\n')
 						workfile = shutil.copy(workdir + 'merged_ocr.pdf', document)
 						# Cleanup Working Files
 						if Path(workfile).is_file() == True:
 							shutil.rmtree(workdir)
 						# Announce Completion of OCR and Play a System Sound
-						UpdateOutput(form, '\n\nOCR Complete!')
+						UpdateOutput(form, '\nOCR Complete!')
 						PlaySound('complete')
 					else:
 						ShowError(funcname, 'There are 0 Pages in the PDF File')
@@ -259,10 +259,12 @@ def main(args):
 					if ndx > -1:
 						errtext = errtext[ndx:(len(errtext) - 1)]
 						result = True
+					elif errtext.lower().find('not found') > -1:
+						result = True
 					else:
 						return(False)
 				PlaySound()	# Play Default System Sound to Announce Error
-				sg.Popup(funcname, errtext)
+				sg.Popup(funcname, CleanCommandOutput(errtext))
 		except Exception as e:
 			sg.Popup('ShowError', 'Error: ' + str(e))
 			
@@ -280,18 +282,16 @@ def main(args):
 		except Exception as e:
 			sg.Popup('CleanCommandOutput', 'Error: ' + str(e))
 		
-	def UpdateOutput(form, updatetxt, key='output', append=True):
+	def UpdateOutput(form, updatetxt, key='output', append_flag=True):
 		# Update the Output Field on the Form
 		try:
 			if form is None:
 				return
 			txt = ''
-			if append == True:
-				txt = form.FindElement(key).Get()
 			if updatetxt is not None:
-				txt += updatetxt
+				txt = updatetxt
 			form.FindElement(key).Update(disabled=False)
-			form.FindElement(key).Update(CleanCommandOutput(txt))
+			form.FindElement(key).Update(value=CleanCommandOutput(txt), append=append_flag)
 			form.FindElement(key).Update(disabled=True)
 			form.Refresh()
 		except Exception as e:
@@ -301,21 +301,18 @@ def main(args):
 		# Execute a Shell Command and Return the Output, Optionally Update Output Field
 		try:
 			cmd = ' '.join(str(x) for x in [command, *args]) # Recommended for String Input
-			sp = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-			out, err = sp.communicate()
-			# Get Command Output Along with Errors
+			p = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+			# Get Command Output Line by Line
 			cmdoutput = ''
-			if out:
-				cmdoutput += out.decode('utf-8')
-			if err:
-				cmdoutput += err.decode('utf-8')
-			# Cleanup the Output Text
-			cmdoutput = CleanCommandOutput(cmdoutput)
-			# Update the Output Field on the Form
-			if update_form == True:
-				UpdateOutput(form, cmdoutput)
+			for line in p.stdout:
+				line = line.decode('utf-8')
+				cmdoutput += line
+				# Update the Output Field on the Form with the Current Command Output Line
+				if update_form == True:
+					UpdateOutput(form, updatetxt=line, key='output', append_flag=True)
+
 			# Return the Command Output to the Caller
-			return(cmdoutput)
+			return (cmdoutput)
 		except: pass
 
 	Launcher()
@@ -323,3 +320,4 @@ def main(args):
 if __name__ == '__main__':
     import sys
     sys.exit(main(sys.argv))
+	
