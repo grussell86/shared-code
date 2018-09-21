@@ -86,7 +86,7 @@ def main(args):
 			missing = CheckInstall()
 			if len(missing) > 0:
 				# Update Output Field with Missing Programs
-				UpdateOutput(form, 'The Following Helper Programs Could Be Found:\n\t' + missing + '\n\nSome Functionality May Be Limited', append=False)
+				UpdateOutput(form, 'The Following Helper Programs Could Be Found:\n\t' + missing + '\n\nSome Functionality May Be Limited', append_flag=False)
 				# Disable Relevant Form Elements Unless Sound Only is Missing
 				if missing != 'play':
 					form.FindElement('ocr').Update(False, disabled=True) # OCR Will Not Work if Any Other Program is Missing
@@ -109,7 +109,7 @@ def main(args):
 					form.FindElement('view').Update(True)
 					form.FindElement('letter').Update(True)
 					form.FindElement('color').Update(False)
-					UpdateOutput(form, None, append=False)
+					UpdateOutput(form, None, append_flag=False)
 				elif button == 'Scan':
 					# Generate a Unique Filename Based on Date and Time
 					outfile = outputdir + 'scan_' + datetime.datetime.now().strftime("%Y-%m-%d-%H-%M-%S") + '.pdf'
@@ -125,11 +125,12 @@ def main(args):
 		funcname = 'ScanDocument'
 		try:
 			# Update the Output Field
-			UpdateOutput(form, 'Beginning Scan...\n', append=False)
+			UpdateOutput(form, 'Beginning Scan...\n\n', append_flag=False)
 			# Create a Working Directory
 			workdir = CreateWorkingDirectory()
 			# Determine Scanner to Use
-			device = ExecuteCommandSubprocess(form, 'lpstat', '-s | egrep -iv "fax|laser|pdf" | grep ip= | head -1 | cut -d= -f2- | xargs hp-makeuri -s', update_form=True).strip('\n')
+			device = ExecuteCommandSubprocess(form, 'lpstat', '-s | egrep -iv "fax|laser|pdf" | grep ip= | head -1 | cut -d= -f2- | xargs hp-makeuri -s', update_form=False).strip('\n')
+			UpdateOutput(form, 'Scan Device: ' + device + '\n\n')
 			# Set Scan Options for 'scanimage'
 			args = []
 			args += '--device-name="' + device + '"'		# Device for Scanning
@@ -152,17 +153,20 @@ def main(args):
 				# Sound an Error and Return
 				PlaySound()
 				return
+			# Get the Number of Pages Scanned from Scan Result
+			ndx = result.find('Batch terminated, ')
+			numpages = result[ndx:(len(result) - 1)]
+			ndx = numpages.find('\n')
+			numpages = int(re.sub('[^0-9]', '', numpages[0:ndx], flags=re.DOTALL))
+			# Rename Each Page to Maintain Merged Page Order By Padding Page Number with Leading Zeros
+			for i in range(1, numpages + 1):
+				shutil.move(workdir + 'scan_' + str(i) + '.tif', workdir + 'scan_' + str(i).zfill(6) + '.tif')
 			# OCR Pages If Option Selected
 			if values['ocr'] == True:
-				# Get the Number of Pages Scanned from Scan Result
-				ndx = result.find('Batch terminated, ')
-				numpages = result[ndx:(len(result) - 1)]
-				ndx = numpages.find('\n')
-				numpages = int(re.sub('[^0-9]', '', numpages[0:ndx], flags=re.DOTALL))
 				# OCR Each Page
 				for i in range(1, numpages + 1):
-					UpdateOutput(form, 'Running OCR on Page: ' + str(i) + '\n')
-					workfile = workdir + 'scan_' + str(i) + '.tif'
+					UpdateOutput(form, '\nRunning OCR on Page: ' + str(i) + '\n')
+					workfile = workdir + 'scan_' + str(i).zfill(6) + '.tif'
 					if ShowError(funcname, ExecuteCommandSubprocess(form, 'tesseract', '-l eng', workfile, workfile.replace('.tif', '-new'), 'pdf'), True) == True: return
 				# Set Command and File List for Merging Pages
 				merge_cmd = 'pdftk'
@@ -228,12 +232,14 @@ def main(args):
 					if ndx > -1:
 						errtext = errtext[ndx:(len(errtext) - 1)]
 						result = True
+					elif errtext.lower().find('not found') > -1:
+						result = True
 					else:
 						return(False)
 				PlaySound()	# Play Default System Sound to Announce Error
-				sg.Popup(funcname, errtext)
+				sg.Popup(funcname, CleanCommandOutput(errtext))
 		except Exception as e:
-			sg.PopupError('ShowError', 'Error: ' + str(e))
+			sg.Popup('ShowError', 'Error: ' + str(e))
 			
 		return(result)
 		
@@ -249,18 +255,16 @@ def main(args):
 		except Exception as e:
 			sg.Popup('CleanCommandOutput', 'Error: ' + str(e))
 		
-	def UpdateOutput(form, updatetxt, key='output', append=True):
+	def UpdateOutput(form, updatetxt, key='output', append_flag=True):
 		# Update the Output Field on the Form
 		try:
 			if form is None:
 				return
 			txt = ''
-			if append == True:
-				txt = form.FindElement(key).Get()
 			if updatetxt is not None:
-				txt += updatetxt
+				txt = updatetxt
 			form.FindElement(key).Update(disabled=False)
-			form.FindElement(key).Update(CleanCommandOutput(txt))
+			form.FindElement(key).Update(value=CleanCommandOutput(txt), append=append_flag)
 			form.FindElement(key).Update(disabled=True)
 			form.Refresh()
 		except Exception as e:
@@ -270,21 +274,18 @@ def main(args):
 		# Execute a Shell Command and Return the Output, Optionally Update Output Field
 		try:
 			cmd = ' '.join(str(x) for x in [command, *args]) # Recommended for String Input
-			sp = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-			out, err = sp.communicate()
-			# Get Command Output Along with Errors
+			p = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+			# Get Command Output Line by Line
 			cmdoutput = ''
-			if out:
-				cmdoutput += out.decode('utf-8')
-			if err:
-				cmdoutput += err.decode('utf-8')
-			# Cleanup the Output Text
-			cmdoutput = CleanCommandOutput(cmdoutput)
-			# Update the Output Field on the Form
-			if update_form == True:
-				UpdateOutput(form, cmdoutput)
+			for line in p.stdout:
+				line = line.decode('utf-8')
+				cmdoutput += line
+				# Update the Output Field on the Form with the Current Command Output Line
+				if update_form == True:
+					UpdateOutput(form, updatetxt=line, key='output', append_flag=True)
+
 			# Return the Command Output to the Caller
-			return(cmdoutput)
+			return (cmdoutput)
 		except: pass
 
 	Launcher()
