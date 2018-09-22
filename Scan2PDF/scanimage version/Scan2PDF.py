@@ -38,6 +38,7 @@ def main(args):
 	import shutil
 	import tempfile
 	import datetime
+	import time
 	import re
 	from pathlib import Path
 
@@ -118,7 +119,7 @@ def main(args):
 					# View the Output File
 					if values['view'] == True:
 						ViewDocument(form, outfile)
-
+				time.sleep(.01)	# Improves Performance in Non-Blocking Forms
 			form.CloseNonBlockingForm()
 
 	def ScanDocument(form, outfile, values):
