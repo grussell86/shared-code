@@ -38,6 +38,7 @@ def main(args):
 	import shutil
 	import tempfile
 	import datetime
+	import time
 	import re
 	from pathlib import Path
 
@@ -123,6 +124,7 @@ def main(args):
 					# View the Output File
 					if values['view'] == True:
 						ViewDocument(form, outfile)
+				time.sleep(.01)	# Improves Performance in Non-Blocking Forms
 			form.CloseNonBlockingForm()
 
 	def ScanDocument(form, outfile, values):
@@ -147,7 +149,7 @@ def main(args):
 				args += ' --mode=gray'
 			args += ' --file="' + outfile + '"'			# Set Filename for Output Document
 			# Begin Scan and Display any Errors
-			ShowError(funcname, ExecuteCommandSubprocess(form, 'hp-scan2', ''.join(args), update_form=True), True)
+			ShowError(funcname, ExecuteCommandSubprocess(form, 'hp-scan', ''.join(args), update_form=True), True)
 		except Exception as e:
 			ShowError(funcname, 'Error: ' + str(e))
 
