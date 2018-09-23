@@ -8,9 +8,10 @@
 #
 #	Requires: 	Python3
 #				PySimpleGUI - pip3 install PySimpleGUI
+#				playsound - pip3 install playsound (audio feedback)
 #				Many Helper Programs as Listed in CheckInstall
-#	Optional: 	Sound Feedback Provided by Package 'sox'
-#				Sounds from Package 'sound-theme-freedesktop'
+#	Optional: 	Sounds from Package 'sound-theme-freedesktop' or similar
+#				Windows Sounds from C:\Windows\Media\
 #  
 #  Copyright 2018 Gregory W. Russell <grussell86@yahoo.com>
 #  
@@ -41,12 +42,13 @@ def main(args):
 	import time
 	import re
 	from pathlib import Path
+	from playsound import playsound
 
 	def CheckInstall(form=None):
 		result = ''
 		try:
 			missing_items = []
-			helpers = ['scanimage', 'pdftk', 'tesseract', 'play']
+			helpers = ['scanimage', 'pdftk', 'pdftoppm', 'convert', 'tesseract']
 			for helper in helpers:
 				if ExecuteCommandSubprocess(form, 'which', helper, update_form=False) == '': missing_items += ' ' + helper
 			
@@ -88,14 +90,13 @@ def main(args):
 			if len(missing) > 0:
 				# Update Output Field with Missing Programs
 				UpdateOutput(form, 'The Following Helper Programs Could Be Found:\n\t' + missing + '\n\nSome Functionality May Be Limited', append_flag=False)
-				# Disable Relevant Form Elements Unless Sound Only is Missing
-				if missing != 'play':
-					form.FindElement('ocr').Update(False, disabled=True) # OCR Will Not Work if Any Other Program is Missing
-					if missing.find('scanimage') > -1:
-						fields = ['glass', 'adf', 'Scan', 'view', 'letter', 'color']
-						for field in fields:
-							form.FindElement(field).Update(False, disabled=True)
-						form.FindElement('Clear').Update(text='Exit')	# Change Clear Button to an Exit Button
+				# Disable Relevant Form Elements Unless Only PDF Viewer is Missing
+				form.FindElement('ocr').Update(False, disabled=True) # OCR Will Not Work if Any Other Program is Missing
+				if missing.find('scanimage') > -1:
+					fields = ['glass', 'adf', 'Scan', 'view', 'letter', 'color']
+					for field in fields:
+						form.FindElement(field).Update(False, disabled=True)
+					form.FindElement('Clear').Update(text='Exit')	# Change Clear Button to an Exit Button
 					
 			# Loop Taking in User Input and Using It
 			while True:
@@ -217,11 +218,11 @@ def main(args):
 		return(workdir)
 		
 	def PlaySound(sound='bell'):
-		# Play System Sound - Requires Installation of 'sox' Package, but Will Fail Gracefully
+		# Play System Sound - Requires Installation of playsound Python Package, but Will Fail Gracefully
 		#	Uses Standard Sounds Found in Package 'sound-theme-freedesktop' or Similar
 		try:
 			sndfile = '/usr/share/sounds/freedesktop/stereo/NNNNNNNN.oga'
-			ExecuteCommandSubprocess(None, 'play', '-q', sndfile.replace('NNNNNNNN', sound) , update_form=False)
+			playsound(sndfile.replace('NNNNNNNN', sound))
 		except: pass
 		
 	def ShowError(funcname, errtext, parse=False):
