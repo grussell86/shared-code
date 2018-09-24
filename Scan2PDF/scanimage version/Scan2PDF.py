@@ -75,11 +75,11 @@ def main(args):
 					  sg.Radio('Scanner Glass', 'RADIO1', key='glass'), sg.Radio('Automatic Document Feeder', 'RADIO1', key='adf', default=True),]]),
 					   sg.ReadFormButton('Clear', key='Clear'), sg.ReadFormButton('Scan Document', bind_return_key=True, key='Scan')],
 					  [sg.Frame('Options',[
-					  [sg.Checkbox('OCR Document after Scanning', key='ocr', default=True), sg.Checkbox('Open Document after Scanning', key='view', default=True)],
-					  [sg.Checkbox('Letter Size Paper', key='letter', default=True), sg.Checkbox('Color', key='color', default=False)]])],
+					  [sg.Checkbox('OCR Document after Scanning', size=(26,1), key='ocr', default=True), sg.Checkbox('Open Document after Scanning', key='view', default=True)],
+					  [sg.Checkbox('Letter Size Paper', size=(26,1), key='letter', default=True), sg.Checkbox('Color', key='color', default=False)]])],
 					  [sg.Text('Status:', size=(15, 1))],
 					  [sg.Multiline(size=(100,35), key='output', background_color='#ECECEC', autoscroll=True, focus=True)],
-					  ]
+					  ]		
 
 			# Create the Form and Show It
 			form.LayoutAndRead(layout, non_blocking=True)		# Create a Non-Blocking Form to Allow for Updates in Multiline Output
