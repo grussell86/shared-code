@@ -262,6 +262,9 @@ def main(args):
 		#	Uses Standard Sounds Found in Package 'sound-theme-freedesktop' or Similar
 		try:
 			sndfile = '/usr/share/sounds/freedesktop/stereo/NNNNNNNN.oga'
+			if os.name = 'nt':
+				sndfile = 'C:\\Windows\media\\NNNNNN.wav'
+				sound = sound.replace('bell', 'chord').replace('complete', 'chimes')
 			playsound(sndfile.replace('NNNNNNNN', sound))
 		except: pass
 		
