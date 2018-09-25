@@ -53,17 +53,15 @@ def main(args):
 	import time
 	import re
 	import os
-	from pathlib import Path
 	from playsound import playsound
 
 	def Launcher():
 		# Output Location for Scanned Document - PDF Folder in Home Directory
-		outputdir = str(Path.home())
-		delimiter = GetDirectoryDelimiter(outputdir)
-		outputdir += delimiter + 'PDF' + delimiter
+		outputdir = os.path.expanduser('~')
+		outputdir = os.path.join(outputdir, 'PDF')
 
-		if Path(outputdir).is_dir() == False:
-			Path(outputdir).mkdir(parents=True, exist_ok=True)
+		if os.path.exists(outputdir) == False:
+			os.mkdir(outputdir)
 		
 		# Set window Options
 		sg.SetOptions(element_padding=(10,0))
@@ -100,7 +98,7 @@ def main(args):
 					UpdateOutput(window, None, append_flag=False)
 				elif button == 'Scan':
 					# Generate a Unique Filename Based on Date and Time
-					outfile = outputdir + 'scan_' + datetime.datetime.now().strftime("%Y-%m-%d-%H-%M-%S") + '.pdf'
+					outfile = os.path.join(outputdir, 'scan_' + datetime.datetime.now().strftime("%Y-%m-%d-%H-%M-%S") + '.pdf')
 					# Scan and Optionally OCR the Document
 					ScanDocument(window, outfile, values)
 					# View the Output File
@@ -169,7 +167,7 @@ def main(args):
 			# Output Each Image as a TIFF File
 			pages = []	# List of Pages to Process
 			for idx in range(0, numpages):
-				workfile = workdir + 'scan_' + str(idx+1).zfill(6) + '.tif'
+				workfile = os.path.join(workdir, 'scan_' + str(idx+1).zfill(6) + '.tif')
 				image = scan_session.images[idx]
 				imagesize = image.size
 				if values['letter'] == True:
@@ -181,7 +179,7 @@ def main(args):
 			# Close Connection to Scanner
 			pyinsane2.exit()
 			# Verify Pages Got Created
-			if Path(workdir + 'scan_000001.tif').is_file() == False:
+			if os.path.isfile(os.path.join(workdir, 'scan_000001.tif')) == False:
 				# Sound an Error and Return
 				PlaySound()
 				return
@@ -191,7 +189,7 @@ def main(args):
 				pages = []	# List of Pages to Process
 				for idx in range(0, numpages):
 					UpdateOutput(window, '\nRunning OCR on Page: ' + str(idx+1))
-					workfile = workdir + 'scan_' + str(idx+1).zfill(6) + '.tif'
+					workfile = os.path.join(workdir, 'scan_' + str(idx+1).zfill(6) + '.tif')
 					pyocr.libtesseract.image_to_pdf(PIL.Image.open(workfile), workfile.replace('.tif', '-new'))  # .pdf will be appended
 					pages.append(workfile.replace('.tif', '-new.pdf'))
 				UpdateOutput(window, '\n\nCollecting Pages...\n')
@@ -212,7 +210,7 @@ def main(args):
 				with open(outfile,"wb") as f:
 					f.write(img2pdf.convert(pages, layout_fun=layout_fun))	
 			# Verify Output File was Created
-			if Path(outfile).is_file() == False:
+			if os.path.isfile(outfile)  == False:
 				ShowError(funcname, 'Unable to Locate Output PDF File!')
 				# Sound an Error and Return
 				PlaySound()
@@ -227,45 +225,41 @@ def main(args):
 
 	def ViewDocument(window, document):
 		# View the Output Document If it Exists
-		if Path(document).is_file() == True:
+		if os.path.isfile(document) == True:
 			viewer = 'xdg-open'		# Most Version of Linux
 			if os.name == 'nt':		# Windows (Requires a Preinstalled PDF Reader)
 				viewer = 'explorer'
 			ShowError('ViewDocument', ExecuteCommandSubprocess(window, viewer, '"' + document + '"'), True)
 	
-	def GetDirectoryDelimiter(input):
-		try:
-			delimiter = '/'
-			if input is not None:
-				if input.startswith('/'):		# Get the Directory Delimiter
-					delimiter = '/'				# *nix
-				else:
-					delimiter = '\\'			# Most Likely Windows
-				
-			return(delimiter)
-		except Exception as e:
-			ShowError('GetDirectoryDelimiter', 'Error: ' + str(e))
-
 	def CreateWorkingDirectory():
 		# Create a Working Directory
 		workdir = ''
 		try:
 			workdir = tempfile.mkdtemp()
-			workdir += GetDirectoryDelimiter(workdir)
 		except Exception as e:
 			ShowError('CreateWorkingDirectory', 'Error: ' + str(e))
 		
 		return(workdir)
 		
 	def PlaySound(sound='bell'):
-		# Play System Sound - Requires Installation of playsound Python Package, but Will Fail Gracefully
-		#	Uses Standard Sounds Found in Package 'sound-theme-freedesktop' or Similar
+		# Play System Sound - Requires Installation of 'playsound' Python Package, but Will Fail Gracefully
+		#	Uses Standard Sounds Found in Package 'sound-theme-freedesktop', C:\Windows\media or Similar
+		#	Custom Sound Files May Be Placed in the Script Directory
+		#		Linux - bell.oga, complete.oga
+		#		Windows	- chord.wav, complete.wav
 		try:
-			sndfile = '/usr/share/sounds/freedesktop/stereo/NNNNNNNN.oga'
-			if os.name = 'nt':
-				sndfile = 'C:\\Windows\media\\NNNNNN.wav'
-				sound = sound.replace('bell', 'chord').replace('complete', 'chimes')
-			playsound(sndfile.replace('NNNNNNNN', sound))
+			scriptpath = os.path.dirname(os.path.realpath(__file__))	# Path to Currently Running Script
+			sndpath = '/usr/share/sounds/freedesktop/stereo'			# Path to Sound Files - Linux
+			sndfile = 'NNNNNNNN.oga'									# Sound File
+			if os.name == 'nt':
+				sndpath = 'C:\\Windows\\media'											# Change Windows Sound File Path
+				sndfile = 'NNNNNNNN.wav'												# Change Windows Sound File Type
+				sound = sound.replace('bell', 'chord').replace('complete', 'chimes')	# Change Windows Sound File Name
+			sndfile = sndfile.replace('NNNNNNNN', sound)								# Change Sound File Name to Selected Value
+			if os.path.isfile(os.path.join(sndpath, sndfile)):			# Verify Sound File Exists
+				playsound(os.path.join(sndpath, sndfile))				# Play Sound File
+			elif os.path.isfile(os.path.join(scriptpath, sndfile)):		# Check for Sound File in Script Directory
+				playsound(os.path.join(scriptpath, sndfile))			# Play Sound File in Script Directory
 		except: pass
 		
 	def ShowError(funcname, errtext, parse=False):
