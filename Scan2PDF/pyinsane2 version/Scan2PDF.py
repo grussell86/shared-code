@@ -57,13 +57,12 @@ def main(args):
 
 	def Launcher():
 		# Output Location for Scanned Document - PDF Folder in Home Directory
-		outputdir = os.path.expanduser('~')
-		outputdir = os.path.join(outputdir, 'PDF')
+		outputdir = os.path.join(os.path.expanduser('~'), 'PDF')
 
 		if os.path.exists(outputdir) == False:
 			os.mkdir(outputdir)
 		
-		# Set window Options
+		# Set Window Options
 		sg.SetOptions(element_padding=(10,0))
 		
 		# Build the Input window
