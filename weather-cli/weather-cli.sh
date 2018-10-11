@@ -106,9 +106,9 @@ function get_forecast_item {
 		sleep 1
 	done
 	# Convert Holidays to a Day of the Week
-	if egrep -q "Independence|Labor|Memorial|Thanksgiving|Christmas|New Year's|M.L.King|Washington's Birthday|President's" "$forecast"; then
+	if egrep -q "Independence|Labor|Memorial|Thanksgiving|Christmas|New Year's|M.L.King|Washington's Birthday|President's|Columbus" "$forecast"; then
 		july4=$(date --date="$(date +%Y)-7-4" +%A); christmas=$(date --date="$(date +%Y)-12-25" +%A); newyear=$(date --date="$(( $(date +%Y) + 1 ))-1-1" +%A)
-		sed -i -e "s|Independence|$july4|g" -e 's/Labor/Monday/g' -e 's/Memorial/Monday/g' -e 's/M.L.King/Monday/g' -e "s/President's/Monday/g" -e "s/Washington's Birthday/Monday/g" -e 's/Thanksgiving/Thursday/g' -e "s|Christmas|$christmas|g" -e "s|New Year's|$newyear|g" -e 's/ Day//g' "$forecast"
+		sed -i -e "s|Independence|$july4|g" -e 's/Labor/Monday/g' -e 's/Memorial/Monday/g' -e 's/M.L.King/Monday/g' -e "s/President's/Monday/g" -e "s/Columbus/Monday/g" -e "s/Washington's Birthday/Monday/g" -e 's/Thanksgiving/Thursday/g' -e "s|Christmas|$christmas|g" -e "s|New Year's|$newyear|g" -e 's/ Day//g' "$forecast"
 	fi
 	# Try Up to $max_trys Times to Get a Valid Time Layout
 	time_layout=""
