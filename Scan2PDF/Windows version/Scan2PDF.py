@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python
 # -*- coding: utf-8 -*-
 #
 #  Scan2PDF.py
@@ -47,7 +47,11 @@
 
 
 def main(args):
-    import PySimpleGUI as sg
+    import sys
+    if sys.version_info[0] >= 3:
+        import PySimpleGUI as sg
+    else:
+        import PySimpleGUI27 as sg
     import pyinsane2
     import PIL.Image
     import pyocr
@@ -57,9 +61,9 @@ def main(args):
     import shutil
     import tempfile
     import datetime
-    from time import sleep
     import re
     import os
+    from time import sleep
     from playsound import playsound
 
     if os.name == 'nt':
@@ -90,28 +94,32 @@ def main(args):
         sg.SetOptions(element_padding=(10, 0))
 
         # Build the Input window
-        with sg.Window('Scan Document to PDF', default_button_element_size=(8, 1), auto_size_buttons=True) as window:
-            layout = [[sg.Frame('Document Source', [[sg.Text('Scanner: ', size=(7, 1)), sg.InputCombo(('Searching...'), size=(50, 1), key='scanner')],
-                                                    [sg.Radio('Scanner Glass', 'RADIO1', key='glass', default=True), sg.Radio('Automatic Document Feeder', 'RADIO1', key='adf', default=False), ]]),
-                       sg.ReadButton('Clear', key='Clear'), sg.ReadButton('Scan Document', bind_return_key=True, key='Scan')],
+        with sg.Window('Scan Document to PDF', default_button_element_size=(8,1), auto_size_buttons=True, auto_size_text=False, default_element_size=(26,1)) as window:
+            layout = [[sg.Frame('Document Source', [
+                          [sg.Text('Scanner: ', size=(7, 1)), 
+                           sg.InputCombo(('Searching...'), size=(50, 1), key='scanner')],
+                          [sg.Radio('Scanner Glass', 'RADIO1', key='glass', default=True), 
+                           sg.Radio('Automatic Document Feeder', 'RADIO1', key='adf'), ]]),
+                       sg.ReadButton('Clear', key='Clear'), 
+                       sg.ReadButton('Scan Document', bind_return_key=True, key='Scan')],
                       [sg.Frame('Options', [
-                          [sg.Checkbox('OCR Document after Scanning', size=(26, 1), key='ocr', default=True), sg.Checkbox(
-                              'Open Document after Scanning', key='view', default=True)],
-                          [sg.Checkbox('Letter Size Paper', size=(26, 1), key='letter', default=True), sg.Checkbox('Color', key='color', default=False)]])],
-                      [sg.Text('Status:', size=(15, 1))],
-                      [sg.Multiline(size=(100, 35), key='output',
-                                    background_color='#ECECEC', autoscroll=True, focus=True)],
+                          [sg.Checkbox('OCR Document after Scanning', key='ocr', default=True), 
+                           sg.Checkbox('Open Document after Scanning', key='view', default=True)],
+                          [sg.Checkbox('Letter Size Paper', key='letter', default=True), 
+                           sg.Checkbox('Color', key='color', default=False)]])],
+                      [sg.Text('Status:')],
+                      [sg.Multiline(size=(100, 35), key='output', background_color='#ECECEC', autoscroll=True, focus=True)],
                       ]
 
-            # Create the Window and Show It
-            # Create a Non-Blocking window to Allow for Updates in Multiline Output
+            # Create a Non-Blocking Window to Allow for Updates in Multiline Output
             window.LayoutAndRead(layout, non_blocking=True)
+
             # Disable Input to Output Status Field
             window.FindElement('output').Update(disabled=True)
-            keys = ['scanner', 'glass', 'adf', 'Clear',
-                    'Scan', 'ocr', 'view', 'letter', 'color']
+
+            # Disable All Elements During Initial Search for Scanners
+            keys = ['scanner', 'glass', 'adf', 'Clear', 'Scan', 'ocr', 'view', 'letter', 'color']
             for key in keys:
-                # Disable All Elements During Scanner Search
                 window.FindElement(key).Update(disabled=True)
             window.Refresh()
 
@@ -129,19 +137,16 @@ def main(args):
 
             # Add the List of Scanners to the Input Combo
             if len(scanners) == 0:
-                window.FindElement('scanner').Update(
-                    values=['Unable to Locate a Scanner'], disabled=False)
+                window.FindElement('scanner').Update(values=['Unable to Locate a Scanner'], disabled=False)
             else:
-                window.FindElement('scanner').Update(
-                    values=scanners, disabled=False)
+                window.FindElement('scanner').Update(values=scanners, disabled=False)
                 # Enable All Input Fields
                 for key in keys:
                     window.FindElement(key).Update(disabled=False)
 
             if os.name == 'nt' and ((len(tesseract) == 0) or (len(PDFTK_PATH) == 0)):
                 window.FindElement('ocr').Update(False, disabled=True)
-                UpdateOutput(
-                    window, "Unable to Locate 'tesseract-ocr/pdftk' --> OCR is Disabled\n\n")
+                UpdateOutput(window, "Unable to Locate 'tesseract-ocr/pdftk' --> OCR is Disabled\n\n")
 
             # Loop Taking in User Input and Using It
             while True:
@@ -335,7 +340,7 @@ def main(args):
                     else:
                         result = pypdftk.concat(pages, out_file=outfile)
                 except Exception as e:
-                    pass                # pypdftk reports as error, but still works
+                    pass    # pypdftk reports as error, but still works
             else:
                 # Convert Pages to PDF and Merge to Output File
                 UpdateOutput(window, '\n\nCollecting Image Files as PDF...\n')
@@ -377,8 +382,8 @@ def main(args):
             # Windows (Requires a Preinstalled PDF Reader)
             if os.name == 'nt':
                 viewer = 'explorer'
-            ShowError('ViewDocument', ExecuteCommandSubprocess(
-                window, viewer, '"' + document + '"'), True)
+            ShowError('ViewDocument', 
+                ExecuteCommandSubprocess(window, viewer, '"' + document + '"'), True)
 
     def CreateWorkingDirectory():
         # Create a Working Directory
@@ -401,20 +406,20 @@ def main(args):
             scriptpath = os.path.dirname(os.path.realpath(__file__))
             # Path to Sound Files - Linux
             sndpath = '/usr/share/sounds/freedesktop/stereo'
-            sndfile = 'NNNNNNNN.oga'                                    # Sound File
+            sndfile = 'NNNNNNNN.oga'    # Sound File
             if os.name == 'nt':
                 # Change Windows Sound File Path
                 sndpath = 'C:\\Windows\\media'
                 # Change Windows Sound File Type
                 sndfile = 'NNNNNNNN.wav'
-                sound = sound.replace('bell', 'chord').replace(
-                    'complete', 'chimes')    # Change Windows Sound File Name
+                # Change Windows Sound File Name
+                sound = sound.replace('bell', 'chord').replace('complete', 'chimes')
             # Change Sound File Name to Selected Value
             sndfile = sndfile.replace('NNNNNNNN', sound)
             # Verify Sound File Exists
             if os.path.isfile(os.path.join(sndpath, sndfile)):
-                playsound(os.path.join(sndpath, sndfile)
-                          )               # Play Sound File
+                # Play Sound File
+                playsound(os.path.join(sndpath, sndfile))
             # Check for Sound File in Script Directory
             elif os.path.isfile(os.path.join(scriptpath, sndfile)):
                 # Play Sound File in Script Directory
@@ -445,10 +450,8 @@ def main(args):
     def CleanCommandOutput(txt):
         # Remove Extraneous Text from Command Subprocess Output
         try:
-            txt = txt.replace('[01m', '').replace(
-                '[0m', '').replace('[31;01m', '')
-            txt = re.sub('Reading data.*?\n', 'Reading data...\n',
-                         txt, flags=re.DOTALL)
+            txt = txt.replace('[01m', '').replace('[0m', '').replace('[31;01m', '')
+            txt = re.sub('Reading data.*?\n', 'Reading data...\n', txt, flags=re.DOTALL)
             txt = re.sub('Viewing PDF file.*?\n', '', txt, flags=re.DOTALL)
             txt = txt.replace("\n\n\n", "\n")
 
@@ -465,8 +468,7 @@ def main(args):
             if updatetxt is not None:
                 txt = updatetxt
             window.FindElement(key).Update(disabled=False)
-            window.FindElement(key).Update(
-                value=CleanCommandOutput(txt), append=append_flag)
+            window.FindElement(key).Update(value=CleanCommandOutput(txt), append=append_flag)
             window.FindElement(key).Update(disabled=True)
             window.Refresh()
         except Exception as e:
