@@ -7,14 +7,14 @@ _weather-cli()
     cur="${COMP_WORDS[COMP_CWORD]}"
     prev="${COMP_WORDS[COMP_CWORD-1]}"
     opts="real_feel real_feel_f real_feel_c conditions conditions_all current_conditions conditions_icon wind_icon"
-    opts="$opts forecast_all forecast_conditions forecast_icon forecast_high forecast_high_f forecast_high_c forecast_low forecast_low_f forecast_low_c forecast_high_low forecast_high_low_f forecast_high_low_c forecast_precip"
+    opts="$opts forecast_all forecast_conditions forecast_icon forecast_image forecast_high forecast_high_f forecast_high_c forecast_low forecast_low_f forecast_low_c forecast_high_low forecast_high_low_f forecast_high_low_c forecast_precip"
     opts="$opts detailed_forecast detailed_forecast_all alerts alerts_flag"
     opts="$opts sunrise sunset moonrise moonset moonphase moonpct moonage moonicon newmoon firstqtr fullmoon lastqtr nextmoonphase nextmoondate astronomy_all"
     opts="$opts -h --help help -m --metar refresh -t --template day day0 day1 day2 day3 day4 day5 day6"
     opts="$opts credit credit_URL title link suggested_pickup suggested_pickup_period location station_id latitude longitude observation_time observation_time_rfc822 weather temperature_string temp_f temp_c relative_humidity wind_string wind_dir wind_degrees wind_mph wind_kt pressure_in dewpoint_string dewpoint_f dewpoint_c windchill_string windchill_f windchill_c visibility_mi icon_url_base two_day_history_url icon_url_name ob_url disclaimer_url copyright_url privacy_policy_url"
 
 	COMPREPLY=( $(compgen -W "${opts}" -- ${cur}) )
-	
+
 	return 0
  }
 complete -F _weather-cli weather-cli
