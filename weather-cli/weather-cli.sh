@@ -49,10 +49,10 @@ function fmt_temp {
 }
 # Generate a Weather Icon Using the ConkyWeather font
 function get_weather_icon {
-	result=$(echo "$1" | sed -e 's/A Few Clouds/b/g' -e 's|Rain/Snow|x|g' -e 's|Drizzle/Snow|x|g' -e 's|Drizzle/Flurries|x|g' -e 's|Rain/Ice|y|g' -e 's|Rain/Freezing Rain|y|g' -e 's|Drizzle/Freezing Drizzle|y|g' -e 's/Slight Chance Showers/g/' -e 's/Slight Chance Rain/g/' -e 's/Scattered Snow Showers/q/' -e 's/Scattered Showers/g/' -e 's/Clouds.*/0/g')
-	result=$(echo "$result" | sed -e 's/Areas//g' -e 's/Light//g' -e 's/Heavy//g' -e 's/Blowing//g' -e 's/Drifting//g' -e 's/Low//g' -e 's/Small//g' -e 's/Mist//g' -e 's/Pellets//g' -e 's/Grains//g' -e 's/Crystals//g' -e 's/Patches of//g' -e 's/Patches//g' -e 's/Patchy//g' -e 's/Frost then//g' -e 's/Dense//g' -e 's/Likely//g' -e 's/Shallow//g' -e 's/Slight//g' -e 's/Chance//g' -e 's/Isolated//g' -e 's/Increasing//g' -e 's/Decreasing//g' -e 's/Severe//g' -e 's/Scattered//g' -e 's/in Vicinity.*//g' -e 's/ of //g' -e 's/then.*//' -e 's/with.*//' -e 's/and.*//')
+	result=$(echo "$1" | sed -e 's/A Few Clouds/b/g' -e 's|Rain/Snow|x|g' -e 's|Drizzle/Snow|x|g' -e 's|Drizzle/Flurries|x|g' -e 's|Rain/Ice|y|g' -e 's|Rain/Freezing Rain|y|g' -e 's|Drizzle/Freezing Drizzle|y|g' -e 's/Slight Chance Showers/g/' -e 's/Slight Chance Rain Showers/g/' -e 's/Slight Chance Rain/g/' -e 's/Scattered Snow Showers/q/' -e 's/Scattered Showers/g/' -e 's/Clouds.*/0/g')
+	result=$(echo "$result" | sed -e 's/Areas//g' -e 's/Light//g' -e 's/Heavy//g' -e 's/Blowing//g' -e 's/Drifting//g' -e 's/Low//g' -e 's/Small//g' -e 's/Mist//g' -e 's/Pellets//g' -e 's/Grains//g' -e 's/Crystals//g' -e 's/Patches of//g' -e 's/Patches//g' -e 's/Patchy//g' -e 's/Frost then//g' -e 's/Dense//g' -e 's/Likely//g' -e 's/Shallow//g' -e 's/Slight//g' -e 's/Chance//g' -e 's/Isolated//g' -e 's/Increasing//g' -e 's/Decreasing//g' -e 's/Severe//g' -e 's/Scattered//g' -e 's/Widespread//g' -e 's/in Vicinity.*//g' -e 's/ of //g' -e 's/ Of //g' -e 's/then.*//' -e 's/with.*//' -e 's/and.*//')
 	result=$(echo "$result" | sed 's/^[ \t]*//;s/[ \t]*$//') # Trim Leading/Trailing Spaces
-	result=$(echo "$result" | sed -e 's/Gradual Clearing/g/g' -e 's/Mostly Clear/b/g' -e 's/Mostly Sunny/b/g' -e 's/Becoming Sunny/b/g' -e 's/Partly Sunny/d/g' -e 's/Sunny/a/g'  -e 's/Partly Cloudy/c/g' -e 's/Mostly Cloudy/d/g' -e 's/Clear/a/g' -e 's/Fair/a/g' -e 's/Overcast/f/g' -e 's/Cloudy/f/g' -e 's/Sprinkles/g/' -e 's/Drizzle/h/g' -e 's/Rain Ice/y/g' -e 's/Rain.*/i/g' -e 's/Showers.*/i/g' -e 's/^Thunderstorms.*/n/g' -e 's/Thunderstorm/m/g' -e 's/T-storms/m/g' -e 's/Wintry Mix/x/g')
+	result=$(echo "$result" | sed -e 's/Gradual Clearing/g/g' -e 's/Mostly Clear/b/g' -e 's/Mostly Sunny/b/g' -e 's/Becoming Sunny/b/g' -e 's/Partly Sunny/d/g' -e 's/Sunny/a/g'  -e 's/Partly Cloudy/c/g' -e 's/Mostly Cloudy/d/g' -e 's/Clear/a/g' -e 's/Frost/a/g' -e 's/Fair/a/g' -e 's/Overcast/f/g' -e 's/Cloudy/f/g' -e 's/Sprinkles/g/' -e 's/Drizzle/h/g' -e 's/Rain Ice/y/g' -e 's/Rain.*/i/g' -e 's/Showers.*/i/g' -e 's/^Thunderstorms.*/n/g' -e 's/Thunderstorm/m/g' -e 's/T-storms/m/g' -e 's/Wintry Mix/x/g')
 	result=$(echo "$result" | sed -e 's/^Ice.*/u/g' -e 's/^Snow.*/r/g' -e 's/^Hail.*/u/g' -e 's/^Freezing.*/v/g' -e 's/Funnel Cloud/1/g' -e 's/Tornado/1/g' -e 's/Tropical Storm.*/2/g' -e 's/Hurricane.*/3/g' -e 's/Fog.*/9/g' -e 's/^Windy.*/6/g' -e 's/^Breezy.*/6/g' -e 's/Haze/9/g' -e 's/Dust/7/g' -e 's/Smoke/4/g' -e 's/Sand/7/g' -e 's/Hot/5/g' -e 's/Cold/a/g' -e 's/Flurries/p/g')
 	echo "${result:--}" # Hyphen Character Displays N/A Icon for Null Result
 }
@@ -96,7 +96,7 @@ function get_forecast_item {
 	result=""
 	# Loop Until the Cache File is Complete Up to 15 Seconds
 	trys=0
-	while ! egrep -q "</dwml>|</html>" "$forecast"
+	while ! egrep -q "detailedForecast" "$forecast"
 	do
 		if [ $trys -gt 15 ]; then
 			echo "FCNA" # Invalid Forecast Cache
@@ -106,24 +106,23 @@ function get_forecast_item {
 		sleep 1
 	done
 	# Convert Holidays to a Day of the Week
-	if egrep -q "Independence|Labor|Memorial|Thanksgiving|Christmas|New Year's|M.L.King|Washington's Birthday|President's|Columbus" "$forecast"; then
-		july4=$(date --date="$(date +%Y)-7-4" +%A); christmas=$(date --date="$(date +%Y)-12-25" +%A); newyear=$(date --date="$(( $(date +%Y) + 1 ))-1-1" +%A)
-		sed -i -e "s|Independence|$july4|g" -e 's/Labor/Monday/g' -e 's/Memorial/Monday/g' -e 's/M.L.King/Monday/g' -e "s/President's/Monday/g" -e "s/Columbus/Monday/g" -e "s/Washington's Birthday/Monday/g" -e 's/Thanksgiving/Thursday/g' -e "s|Christmas|$christmas|g" -e "s|New Year's|$newyear|g" -e 's/ Day//g' "$forecast"
+	if egrep -q "Independence|Labor|Memorial|Thanksgiving|Christmas|New Year's|M.L.King|Washington's Birthday|President's|Columbus|Veterans" "$forecast"; then
+		july4=$(date --date="$(date +%Y)-7-4" +%A); christmas=$(date --date="$(date +%Y)-12-25" +%A); newyear=$(date --date="$(( $(date +%Y) + 1 ))-1-1" +%A); veterans=$(date --date="$(date +%Y)-11-11" +%A)
+		sed -i -e "s|Independence|$july4|g" -e 's/Labor/Monday/g' -e 's/Memorial/Monday/g' -e 's/M.L.King/Monday/g' -e "s/President's/Monday/g" -e "s/Columbus/Monday/g" -e "s/Washington's Birthday/Monday/g" -e 's/Thanksgiving/Thursday/g' -e "s|Christmas|$christmas|g" -e "s|New Year's|$newyear|g" -e "s|Veterans|$veterans|g" -e 's/ Day//g' "$forecast"
 	fi
 	# Try Up to $max_trys Times to Get a Valid Time Layout
 	time_layout=""
 	trys=0
 	while [ -z "$time_layout" ] && [ $trys -lt $max_trys ]
 	do
-		time_layout=$(grep -A1 "k-p12h-n" "$forecast" | head -1 | cut -d'>' -f2 | cut -d'<' -f1)
+		time_layout=$(grep '"periods":' "$forecast")
 		trys=$(( trys + 1 ))
 	done
 	if [ -z "$time_layout" ]; then
 		echo "Invalid Time Layout"
 		return
 	fi
-	num=$(echo "$time_layout" | cut -d'-' -f3 | sed 's/n//g')
-	readarray times < <(grep -A"$num" "<layout-key>$time_layout</layout-key>" "$forecast" | tail -"$num" | cut -d'"' -f2)
+	readarray times < <(grep '"name":' "$forecast" | cut -d: -f2 | sed -e 's/^ //g' -e 's/,$//g' -e 's/"//g')
 	times_len=${#times[@]}
 	ndx=-1
 	# Test for Numeric Day Offset
@@ -154,7 +153,7 @@ function get_forecast_item {
 		item=$(echo "$1" | tr '[:upper:]' '[:lower:]') # Convert $1 to Lower Case
 		case "$item" in
 			conditions|forecast_all|forecast_all_f|forecast_all_c)
-				readarray forecasts < <(grep -A$((num + 1)) "<weather time-layout=\"$time_layout\"" "$forecast" | tail -"$num" | cut -d'=' -f2 | sed -e 's/\/>//g' -e 's/\"//g')
+				readarray forecasts < <(grep '"shortForecast":' "$forecast" | cut -d: -f2 | sed -e 's/^ //g' -e 's/,$//g' -e 's/"//g')
 				if [ "$item" != "conditions" ]; then
 					hndx=0
 					lndx=0
@@ -197,7 +196,7 @@ function get_forecast_item {
 				fi
 				;;
 			detailed_forecast|detailed_forecast_all|details)
-				readarray detailed_forecasts < <(grep -A$((num + 1)) "<wordedForecast time-layout=\"$time_layout\"" "$forecast" | tail -"$num" | cut -d'>' -f2 | cut -d'<' -f1)
+				readarray detailed_forecasts < <(grep '"detailedForecast":' "$forecast" | cut -d: -f2 | sed -e 's/^ //g' -e 's/,$//g' -e 's/"//g')
 				if [ "${item: -3}" == "all" ]; then
 					for (( i=0; i<times_len; i++ )); do
 						result="$result${times[$i]}$(echo -n "${detailed_forecasts[$i]}" | fold -sw 75 | sed 's|^|  |')\n" # Show Detailed Forecast Offset 2 Spaces
@@ -214,7 +213,7 @@ function get_forecast_item {
 				fi
 				;;
 			high|high_f|high_c|highs)
-				readarray highs < <(grep -A8 "Daily Maximum Temperature" "$forecast" | tail -8 | grep -v "temperature" | cut -d'>' -f2 | cut -d'<' -f1)
+				readarray highs < <(grep -A1 '"isDaytime": true' "$forecast" | grep '"temperature":' | cut -d: -f2 | sed -e 's/^ //g' -e 's/,$//g' -e 's/"//g')
 				if [ "${times[0]::-1}" == "Tonight" ] && [[ "$day" == "0" ]]; then
 						result=""
 				else
@@ -229,7 +228,7 @@ function get_forecast_item {
 				fi
 				;;
 			low|low_f|low_c|lows)
-				readarray lows < <(grep -A7 "Daily Minimum Temperature" "$forecast" | tail -7 | cut -d'>' -f2 | cut -d'<' -f1)
+				readarray lows < <(grep -A1 '"isDaytime": false' "$forecast" | grep '"temperature":' | cut -d: -f2 | sed -e 's/^ //g' -e 's/,$//g' -e 's/"//g')
 				if [ "${times[0]::-1}" == "Tonight" ]; then
 					ndx=$(( ndx / 2 ))
 				else
@@ -244,13 +243,35 @@ function get_forecast_item {
 				fi
 				;;
 			precip|precips)
-				readarray precips < <(grep -A"$num" "<name>12 Hourly Probability of Precipitation</name>" "$forecast" | tail -"$num" | cut -d'>' -f2 | cut -d'<' -f1 | sed -e '/^[0-9]/ s/$/%/' -e 's/^$/0%/')
+				NL=$'\n' # Newline Character
+				readarray precips < <(get_forecast_item 'details')
+                precips_len=${#precips[@]}
+                for (( i=1; i<precips_len+1; i++ )); do
+                    test=$(echo "${precips[$i-1]}" | grep -o '[^ ]*%')
+                    if [ -z "$test" ]; then
+                        precips[$i-1]="0%${NL}"
+                    else
+                        precips[$i-1]="$test${NL}"
+                    fi
+                done
 				result=${precips[$ndx-1]::-1}
 				if [[ "$day" != "0" ]] && [[ "${times[$ndx-1]::-1}" != "Tonight" ]] && [[ ${precips[$ndx]::-2} -gt ${precips[$ndx-1]::-2} ]]; then
 					result=${precips[$ndx]::-1}
 				fi
 				if [ "${item: -1}" == "s" ]; then
 					result=${precips[*]} # Return Array
+				fi
+				;;
+			image|images)
+				readarray images < <(grep '"icon":' "$forecast" | cut -d: -f2- | sed -e 's/^ //g' -e 's/,$//g' -e 's/"//g')
+				if [ "${times[0]::-1}" == "Tonight" ]; then
+					ndx=$(( ndx / 2 ))
+				else
+					ndx=$(( (ndx - 1) / 2 ))
+				fi
+                result=${images[$ndx]::-1}
+				if [ "${item: -1}" == "s" ]; then
+					result=${images[*]} # Return Array
 				fi
 				;;
 			alerts|alerts_flag)
@@ -332,6 +353,8 @@ function display_usage {
 	echo "                      alerts - Active Watches, Warnings, and Advisories"
 	echo "                      alerts_text - Text of Watches, Warnings, and Advisories"
 	echo
+	echo "    forecast_image  : weather.gov image icon for Forecasted Weather Conditions"
+	echo
 	echo "    astronomy_items : sunrise|sunset|moonrise|moonset|moonphase|moonpct"
 	echo "                      nextmoonphase|nextmoondate|moonage|moonicon"
 	echo "                      astronomy_all - Displays All Astronomy Items"
@@ -344,7 +367,7 @@ function display_usage {
 	echo "    moonicon        : Displays MoonPhases font Icon Character for Moon Phase"
 	echo
 	echo "    Sample Usage: '$program conditions' - Displays Current Weather Conditions"
-	echo "    Sample Usage: '$program forecast_high 1' - Forecast Tomorrow's High °F"
+	echo "    Sample Usage: '$program forecast_high1' - Forecast Tomorrow's High °F"
 	echo "    Sample Usage: '$program moonphase' - Displays the Current Moon Phase"
 	echo "    Sample Usage: '$program -t|--template filename' - Displays 'filename'"
 	echo "                                                         with Item Substitution"
@@ -393,10 +416,11 @@ if [ -z "$latitude" ] || [ -z "$longitude" ]; then
 	echo "UGLL" # Unable to Get Latitude/Longitude
 	exit 2
 fi
-# Get the Forecast from NOAA and Output to a Cache File
+# Get the Forecast from weather.gov and Output to a Cache File
 if [[ $updatecache -eq 1 ]] || [ ! -f "$forecast" ]; then
 	rm -f "$alerts"
-	curl -s "https://forecast.weather.gov/MapClick.php?lat=$latitude&lon=$longitude&unit=0&lg=english&FcstType=dwml" -o "$forecast" # unit=0 Fahrenheit
+    fcast_url=$(curl -s "https://api.weather.gov/points/$latitude,$longitude" | grep '"forecast":' | cut -d: -f2- | sed -e 's/^ //' -e 's/,$//' | tr -d '"')
+	curl -s "$fcast_url" -o "$forecast"   
 fi
 # Get the Astronomy Data from USNO, Process and Output to a Cache File
 if [[ $updatecache -eq 1 ]] || [ ! -f "$astronomy" ]; then
@@ -583,9 +607,14 @@ function get_item {
 			echo "${result:-N/A}"
 			;;
 		forecast_icon*)
-			# Generate a Weather Icon for Forecasted Conditions for Specific Day - * is Numerical Day - 0=Today
+			# Generate a Font-based Weather Icon for Forecasted Conditions for Specific Day - * is Numerical Day - 0=Today
 			day=$(echo -n "$1" | tail -c 1 | tr 'n' '0' | sed "s/^$/0/")
 			get_weather_icon "$(get_forecast_item 'conditions' "$day")"
+			;;
+		forecast_image*)
+			# Get a Graphical Weather Icon for Forecasted Conditions for Specific Day - * is Numerical Day - 0=Today
+			day=$(echo -n "$1" | tail -c 1 | tr 'e' '0' | sed "s/^$/0/")
+			get_forecast_item 'image' "$day"
 			;;
 		forecast_high_low*)
 			# Display the Forecasted High/Low for Specific Day - * is Numerical Day - 0=Today
