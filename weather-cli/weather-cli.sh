@@ -49,11 +49,12 @@ function fmt_temp {
 }
 # Generate a Weather Icon Using the ConkyWeather font
 function get_weather_icon {
-	result=$(echo "$1" | sed -e 's/A Few Clouds/b/g' -e 's|Rain/Snow|x|g' -e 's|Drizzle/Snow|x|g' -e 's|Drizzle/Flurries|x|g' -e 's|Rain/Ice|y|g' -e 's|Rain/Freezing Rain|y|g' -e 's|Drizzle/Freezing Drizzle|y|g' -e 's/Slight Chance Showers/g/' -e 's/Slight Chance Rain Showers/g/' -e 's/Slight Chance Rain/g/' -e 's/Scattered Snow Showers/q/' -e 's/Scattered Showers/g/' -e 's/Clouds.*/0/g')
-	result=$(echo "$result" | sed -e 's/Areas//g' -e 's/Light//g' -e 's/Heavy//g' -e 's/Blowing//g' -e 's/Drifting//g' -e 's/Low//g' -e 's/Small//g' -e 's/Mist//g' -e 's/Pellets//g' -e 's/Grains//g' -e 's/Crystals//g' -e 's/Patches of//g' -e 's/Patches//g' -e 's/Patchy//g' -e 's/Frost then//g' -e 's/Dense//g' -e 's/Likely//g' -e 's/Shallow//g' -e 's/Slight//g' -e 's/Chance//g' -e 's/Isolated//g' -e 's/Increasing//g' -e 's/Decreasing//g' -e 's/Severe//g' -e 's/Scattered//g' -e 's/Widespread//g' -e 's/in Vicinity.*//g' -e 's/ of //g' -e 's/ Of //g' -e 's/then.*//' -e 's/with.*//' -e 's/and.*//')
+	result=$(echo "$1" | sed -e 's/And/and/g' -e 's/With/with/g' -e 's/Then/then/g' -e 's/In/in/g' -e 's/Of/of/g' -e 's|/| and |g')
+	result=$(echo "$result" | sed -e 's/A Few Clouds.*/b/g' -e 's|Rain and Snow.*|x|g' -e 's|Drizzle and Snow.*|x|g' -e 's|Drizzle and Flurries.*|x|g' -e 's|Rain and Ice.*|y|g' -e 's|Rain and Freezing Rain.*|y|g' -e 's|Drizzle and Freezing Drizzle.*|y|g' -e 's/Slight Chance Showers.*/g/' -e 's/Slight Chance Rain Showers.*/g/' -e 's/Slight Chance Rain.*/g/' -e 's/Scattered Snow Showers.*/q/' -e 's/Scattered Showers.*/g/' -e 's/Clouds.*/0/g')
+	result=$(echo "$result" | sed -e 's/Areas//g' -e 's/Light//g' -e 's/Heavy//g' -e 's/Blowing//g' -e 's/Drifting//g' -e 's/Periods//g' -e 's/Low//g' -e 's/Small//g' -e 's/Mist//g' -e 's/Pellets//g' -e 's/Grains//g' -e 's/Crystals//g' -e 's/Patches of//g' -e 's/Patches//g' -e 's/Patchy//g' -e 's/Frost then//g' -e 's/Dense//g' -e 's/Likely//g' -e 's/Shallow//g' -e 's/Slight//g' -e 's/Chance//g' -e 's/Isolated//g' -e 's/Increasing//g' -e 's/Decreasing//g' -e 's/Severe//g' -e 's/Scattered//g' -e 's/Widespread//g' -e 's/in Vicinity.*//g' -e 's/ of //g' -e 's/then.*//' -e 's/with.*//' -e 's/and.*//')
 	result=$(echo "$result" | sed 's/^[ \t]*//;s/[ \t]*$//') # Trim Leading/Trailing Spaces
-	result=$(echo "$result" | sed -e 's/Gradual Clearing/g/g' -e 's/Mostly Clear/b/g' -e 's/Mostly Sunny/b/g' -e 's/Becoming Sunny/b/g' -e 's/Partly Sunny/d/g' -e 's/Sunny/a/g'  -e 's/Partly Cloudy/c/g' -e 's/Mostly Cloudy/d/g' -e 's/Clear/a/g' -e 's/Frost/a/g' -e 's/Fair/a/g' -e 's/Overcast/f/g' -e 's/Cloudy/f/g' -e 's/Sprinkles/g/' -e 's/Drizzle/h/g' -e 's/Rain Ice/y/g' -e 's/Rain.*/i/g' -e 's/Showers.*/i/g' -e 's/^Thunderstorms.*/n/g' -e 's/Thunderstorm/m/g' -e 's/T-storms/m/g' -e 's/Wintry Mix/x/g')
-	result=$(echo "$result" | sed -e 's/^Ice.*/u/g' -e 's/^Snow.*/r/g' -e 's/^Hail.*/u/g' -e 's/^Freezing.*/v/g' -e 's/Funnel Cloud/1/g' -e 's/Tornado/1/g' -e 's/Tropical Storm.*/2/g' -e 's/Hurricane.*/3/g' -e 's/Fog.*/9/g' -e 's/^Windy.*/6/g' -e 's/^Breezy.*/6/g' -e 's/Haze/9/g' -e 's/Dust/7/g' -e 's/Smoke/4/g' -e 's/Sand/7/g' -e 's/Hot/5/g' -e 's/Cold/a/g' -e 's/Flurries/p/g')
+	result=$(echo "$result" | sed -e 's/Gradual Clearing.*/g/g' -e 's/Mostly Clear.*/b/g' -e 's/Mostly Sunny.*/b/g' -e 's/Becoming Sunny.*/b/g' -e 's/Partly Sunny.*/d/g' -e 's/Sunny.*/a/g'  -e 's/Partly Cloudy.*/c/g' -e 's/Mostly Cloudy.*/d/g' -e 's/Clear/a/g' -e 's/Frost/a/g' -e 's/Fair/a/g' -e 's/Overcast/f/g' -e 's/Cloudy/f/g' -e 's/Sprinkles/g/' -e 's/Drizzle/h/g' -e 's/Rain Ice/y/g' -e 's/Rain.*/i/g' -e 's/Showers.*/i/g' -e 's/^Thunderstorms.*/n/g' -e 's/Thunderstorm/m/g' -e 's/T-storms/m/g' -e 's/Wintry Mix/x/g')
+	result=$(echo "$result" | sed -e 's/^Ice.*/u/g' -e 's/^Snow.*/r/g' -e 's/^Hail.*/u/g' -e 's/^Sleet.*/u/g' -e 's/^Freezing.*/v/g' -e 's/Funnel Cloud/1/g' -e 's/Tornado/1/g' -e 's/Tropical Storm.*/2/g' -e 's/Hurricane.*/3/g' -e 's/Fog.*/9/g' -e 's/^Windy.*/6/g' -e 's/^Breezy.*/6/g' -e 's/Haze/9/g' -e 's/Dust/7/g' -e 's/Smoke/4/g' -e 's/Sand/7/g' -e 's/Hot/5/g' -e 's/Cold/a/g' -e 's/Flurries/p/g')
 	echo "${result:--}" # Hyphen Character Displays N/A Icon for Null Result
 }
 # Return the User Specified Item from the Conditions Cache File
@@ -153,7 +154,7 @@ function get_forecast_item {
 		item=$(echo "$1" | tr '[:upper:]' '[:lower:]') # Convert $1 to Lower Case
 		case "$item" in
 			conditions|forecast_all|forecast_all_f|forecast_all_c)
-				readarray forecasts < <(grep '"shortForecast":' "$forecast" | cut -d: -f2 | sed -e 's/^ //g' -e 's/,$//g' -e 's/"//g')
+				readarray forecasts < <(grep '"shortForecast":' "$forecast" | cut -d: -f2 | sed -e 's/^ //g' -e 's/,$//g' -e 's/"//g' -e 's/And/and/g' -e 's/With/with/g' -e 's/Then/then/g' -e 's/In/in/g' -e 's/Of/of/g')
 				if [ "$item" != "conditions" ]; then
 					hndx=0
 					lndx=0
@@ -180,8 +181,8 @@ function get_forecast_item {
 							temp='--'
 						fi
 						if [[ "${forecasts[$i]::-1}" == "Cold" ]]; then
-							forecasts[$i]=$(echo "${details[$i]::-1}" | sed -e 's/,.*//g' -e 's/\..*//g' -e 's/^[ \t]*//;s/[ \t]*$//' -e 's/[^ ]\+/\L\u&/g' -e 's/And/and/g' -e 's/With/with/g' -e 's/Then/then/g' -e 's/In/in/g' -e 's/Of/of/g' -e 's|$|\n|')
-						fi
+							forecasts[$i]=$(echo "${details[$i]::-1}" | sed -e 's/,.*//g' -e 's/\..*//g' -e 's/^[ \t]*//;s/[ \t]*$//' -e 's/[^ ]\+/\L\u&/g' -e 's|$|\n|')
+                        fi
 						result=$result$(printf "%15s: (%1s) %-35s  %1s: %4s°%1s  CoP:%5s%s" "${times[$i]::-1}" "$(get_weather_icon "${forecasts[$i]::-1}")" "$(echo -n "${forecasts[$i]}" | fold -sw 35 | head -1)" "$hl" "$temp" "$temp_units" "${precips[$i]::-1}" "\n")
 						if [[ ${#forecasts[$i]} -gt 36 ]]; then # Display Extra Lines of Forecast
 							result="$result$(echo "${forecasts[$i]::-1}" | fold -sw 35 | tail -n +2 | sed 's|^|                     |g')\n"
@@ -434,8 +435,8 @@ if [[ $updatecache -eq 1 ]] || [ ! -f "$astronomy" ]; then
 	# Get Astronomy Data Using Timezone from Current Conditions Data
 	utcoffset=$(get_conditions_item 'observation_time_rfc822' | awk '{print $NF}' | sed -e "s/0//g")
 	timezone=$(get_conditions_item 'observation_time' | awk '{print $NF}' | sed -e "s/^$/$(date +%Z)/" -e "s/EDT/EST5EDT/" -e "s/CDT/CST6CDT/" -e "s/MDT/MST7MDT/" -e "s/PDT/PST8PDT/") # Defaults to Local Time Zone If Not Found in Conditions File
-	data=$(curl -s "http://aa.usno.navy.mil/rstt/onedaytable?ID=AA&year=$(date +%Y)&month=$(date +%m)&day=$(date +%d)&place=&coords=$latitude,$longitude&tz=$utcoffset")
-	nextphases=$(curl -s "http://aa.usno.navy.mil/cgi-bin/aa_phases.pl?&year=$(date +%Y)&month=$(date +%m)&day=$(date +%d)&nump=4&format=t")
+	data=$(curl -s --insecure "https://aa.usno.navy.mil/rstt/onedaytable?ID=AA&year=$(date +%Y)&month=$(date +%m)&day=$(date +%d)&place=&coords=$latitude,$longitude&tz=$utcoffset")
+	nextphases=$(curl -s --insecure "https://aa.usno.navy.mil/cgi-bin/aa_phases.pl?&year=$(date +%Y)&month=$(date +%m)&day=$(date +%d)&nump=4&format=t")
 	trys=0
 	while [[ -z "$data" ]]
 	do
@@ -571,9 +572,19 @@ function get_item {
 			w_units=$(echo -n "$1" | sed -e 's/wind_//g' -e 's/gust_//g')
 			get_conditions_item "$1" | sed -e "/^[0-9]/ s/$/ $w_units/" -e "s/0.0 $w_units/   Calm/"
 			;;
-		conditions|current_conditions|weather)
+		conditions|current_conditions|conditions_short|weather)
 			# Display the Current Conditions
-			get_conditions_item 'weather' | sed -e 's/Light/Lt/g' -e 's/and/\&/g'
+			result=$(get_conditions_item 'weather')
+			# Shorten Conditions if Needed
+			if [ "$1" == "conditions_short" ]; then
+				if [ ${#result} -ge 21 ]; then
+					result=$(echo "$result" | sed -e 's/and/\&/g' -e 's/Light/Lt/g' -e 's/ in Vicinity//g' -e 's/ in Area//g')
+				fi
+				if [ ${#result} -ge 21 ]; then
+					result=$(echo "${result:0:18}...")
+				fi
+			fi
+			echo "$result"
 			;;
 		conditions_icon)
 			# Display a Weather Icon for the Current Conditions
@@ -602,7 +613,7 @@ function get_item {
 			result=$(get_forecast_item 'conditions' "$day")
 			if [ "$day" == "0" ]; then
 				# Special Formatting for Today's Forecast
-				result=$(echo "$result" | sed -e 's/Light/Lt/g' -e 's/Partly/P/g' -e 's/Mostly/M/g' -e 's/Mixed/Mix/g' -e 's/Freezing/Frzg/g' -e 's/Decreasing/Dec/g' -e 's/Heavy //g' -e 's/Scattered //g' -e 's/Isolated //g' -e 's/Slight //g' -e 's/Chance //g' -e 's/Light /Lt/g' -e 's/ Likely//g' -e 's/Patchy//g' -e 's/^Showers.*/Showers/g' -e 's/^Thunderstorm.*/T-Storms/g' -e 's/Increasing/Inc/g' -e 's/Severe/Svr/' -e 's/Thunderstorm/T-storm/' -e 's/and.*//g' -e 's/then.*//g' -e 's|/ |/|g' -e 's/^[ \t]*//;s/[ \t]*$//')
+				result=$(echo "$result" | sed -e 's/Light/Lt/g' -e 's/Partly/P/g' -e 's/Mostly/M/g' -e 's/Mixed/Mix/g' -e 's/Freezing/Frzg/g' -e 's/Decreasing/Dec/g' -e 's/Heavy //g' -e 's/Scattered //g' -e 's/Isolated //g' -e 's/Slight //g' -e 's/Chance //g' -e 's/Light /Lt/g' -e 's/ Likely//g' -e 's/Patchy//g' -e 's/^Showers.*/Showers/g' -e 's/^Thunderstorm.*/T-Storms/g' -e 's/Increasing/Inc/g' -e 's/Severe/Svr/' -e 's/Thunderstorm/T-storm/' -e 's/Areas of//g' -e 's/Periods of//g' -e 's/and.*//g' -e 's/then.*//g' -e 's|/ |/|g' -e 's/^[ \t]*//;s/[ \t]*$//')
 			fi
 			echo "${result:-N/A}"
 			;;
