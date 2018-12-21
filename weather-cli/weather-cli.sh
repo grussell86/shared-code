@@ -6,12 +6,12 @@
 set +e # Suspend Error Trapping
 # Configuration Defaults
 program=$(echo "$0" | sed 's|.*/||' | cut -d'.' -f1)	# Name of Current Program
-config_dir="$HOME/.config/$program"						# Configuration File Location
-config_file="$config_dir/$program.config"				# Configuration File Name
-refresh_interval=1700									# Number of Seconds to Cache Data
-max_trys=5												# Maximum Number of Trys to Get a Non-Empty Value from Cache
-metar="KIMS"											# Default Location (Madison Municipal Airport, IN)
-result=""												# Initialize Return Value
+config_dir="$HOME/.config/$program"			# Configuration File Location
+config_file="$config_dir/$program.config"		# Configuration File Name
+refresh_interval=1700					# Number of Seconds to Cache Data
+max_trys=5						# Maximum Number of Trys to Get a Non-Empty Value from Cache
+metar="KIMS"						# Default Location (Madison Municipal Airport, IN)
+result=""						# Initialize Return Value
 # Read Configuration Information from Config File
 if [ -f "$config_file" ]; then
 	while read -r line
@@ -33,8 +33,8 @@ fi
 # Cached Data Files
 cache_dir="/tmp/$program/$USER/$metar"					# Cached Files Location
 conditions="$cache_dir/conditions.xml"					# Cached Conditions File
-forecast="$cache_dir/forecast.xml"						# Cached Forecast File
-alerts="$cache_dir/alerts.txt"							# Cached Alerts File
+forecast="$cache_dir/forecast.xml"					# Cached Forecast File
+alerts="$cache_dir/alerts.txt"						# Cached Alerts File
 astronomy="$cache_dir/astronomy.txt"					# Cached Astronomy File
 #
 # Convert Fahrenheit to Celsius
@@ -182,7 +182,7 @@ function get_forecast_item {
 						fi
 						if [[ "${forecasts[$i]::-1}" == "Cold" ]]; then
 							forecasts[$i]=$(echo "${details[$i]::-1}" | sed -e 's/,.*//g' -e 's/\..*//g' -e 's/^[ \t]*//;s/[ \t]*$//' -e 's/[^ ]\+/\L\u&/g' -e 's|$|\n|')
-                        fi
+                        			fi
 						result=$result$(printf "%15s: (%1s) %-35s  %1s: %4s°%1s  CoP:%5s%s" "${times[$i]::-1}" "$(get_weather_icon "${forecasts[$i]::-1}")" "$(echo -n "${forecasts[$i]}" | fold -sw 35 | head -1)" "$hl" "$temp" "$temp_units" "${precips[$i]::-1}" "\n")
 						if [[ ${#forecasts[$i]} -gt 36 ]]; then # Display Extra Lines of Forecast
 							result="$result$(echo "${forecasts[$i]::-1}" | fold -sw 35 | tail -n +2 | sed 's|^|                     |g')\n"
@@ -246,15 +246,15 @@ function get_forecast_item {
 			precip|precips)
 				NL=$'\n' # Newline Character
 				readarray precips < <(get_forecast_item 'details')
-                precips_len=${#precips[@]}
-                for (( i=1; i<precips_len+1; i++ )); do
-                    test=$(echo "${precips[$i-1]}" | grep -o '[^ ]*%')
-                    if [ -z "$test" ]; then
-                        precips[$i-1]="0%${NL}"
-                    else
-                        precips[$i-1]="$test${NL}"
-                    fi
-                done
+                		precips_len=${#precips[@]}
+                		for (( i=1; i<precips_len+1; i++ )); do
+                    			test=$(echo "${precips[$i-1]}" | grep -o '[^ ]*%')
+                    			if [ -z "$test" ]; then
+                        			precips[$i-1]="0%${NL}"
+                    			else
+                        			precips[$i-1]="$test${NL}"
+                    			fi
+                		done
 				result=${precips[$ndx-1]::-1}
 				if [[ "$day" != "0" ]] && [[ "${times[$ndx-1]::-1}" != "Tonight" ]] && [[ ${precips[$ndx]::-2} -gt ${precips[$ndx-1]::-2} ]]; then
 					result=${precips[$ndx]::-1}
@@ -270,7 +270,7 @@ function get_forecast_item {
 				else
 					ndx=$(( (ndx - 1) / 2 ))
 				fi
-                result=${images[$ndx]::-1}
+                		result=${images[$ndx]::-1}
 				if [ "${item: -1}" == "s" ]; then
 					result=${images[*]} # Return Array
 				fi
