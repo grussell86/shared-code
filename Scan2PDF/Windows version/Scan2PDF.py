@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 #
 #  Scan2PDF.py
@@ -48,10 +48,7 @@
 
 def main(args):
     import sys
-    if sys.version_info[0] >= 3:
-        import PySimpleGUI as sg
-    else:
-        import PySimpleGUI27 as sg
+    import PySimpleGUI as sg
     import pyinsane2
     import PIL.Image
     import pyocr
@@ -112,7 +109,7 @@ def main(args):
                       ]
 
             # Create a Non-Blocking Window to Allow for Updates in Multiline Output
-            window.LayoutAndRead(layout, non_blocking=True)
+            window.Layout(layout).Read(timeout=1)
 
             # Disable Input to Output Status Field
             window.FindElement('output').Update(disabled=True)
@@ -171,7 +168,6 @@ def main(args):
                     # View the Output File
                     if values['view']:
                         ViewDocument(window, outfile)
-                sleep(.01)    # Improves Performance in Non-Blocking Forms
             window.CloseNonBlockingForm()
 
     def ScanDocument(window, outfile, values):
